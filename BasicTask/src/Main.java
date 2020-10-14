@@ -1,15 +1,44 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+
+    private static int[][] dp4;
+    private static List<List<Integer>> v = new ArrayList<>();
+
     public static void main(String[] args) {
+        prev1();
+        //alo2();
+        //alo3();
+        //alo4();
+        //basic10();
         //basic11();
-        basic12();
+        //basic12();
         //basic13();
 
     }
 
+    private static void basic10() {  // 10 radix to 16 radix
+        int n;
+        Scanner scanner = new Scanner(System.in);
+        n = scanner.nextInt();
+        StringBuilder sb = new StringBuilder();
+        if (n == 0) {
+            System.out.println(0);
+        }
+        while (n > 0) {
+            int t = n % 16;
+            if (9 < t && t < 16) {
+                sb.append((char) ('A' + t - 10));
+            } else {
+                sb.append(t);
+            }
+            n = n / 16;
+        }
+        System.out.println(sb.reverse().toString());
+    }
 
     private static void basic11() { //16进制转10进制
         Scanner scanner = new Scanner(System.in);
@@ -99,5 +128,116 @@ public class Main {
             System.out.print(arr[i] + " ");
         }
         System.out.println(arr[n - 1]);
+    }
+
+    private static void alo2() {
+        Scanner scanner = new Scanner(System.in);
+
+        long n = scanner.nextLong();
+        scanner.close();
+
+        if (n <= 2) {
+            System.out.print(n);
+            return;
+        }
+
+        if (0 == n % 2) {
+            // Even.
+            if (0 != n % 3) {
+                System.out.print((n * (n - 1) * (n - 3)));
+            } else {
+                System.out.print((n - 1) * (n - 2) * (n - 3));
+            }
+        } else {
+            // Odd.
+            System.out.print(n * (n - 1) * (n - 2));
+        }
+    }
+
+    private static void alo3() {
+        Scanner scanner = new Scanner(System.in);
+
+        int k = scanner.nextInt();
+        int L = scanner.nextInt();
+        scanner.close();
+
+        int[][] dp = new int[L + 1][k];
+
+        for (int i = 0; i < k; i++) {
+            dp[1][i] = 1;
+        }
+        for (int i = 2; i <= L; i++) {
+            for (int j = 0; j < k; j++) {
+                for (int a = 0; a < k; a++) {
+                    if (a != j - 1 && a != j + 1) {
+                        dp[i][j] += dp[i - 1][a];
+                        dp[i][j] %= 1000000007;
+                    }
+                }
+            }
+        }
+        int ans = 0;
+        for (int i = 1; i < k; i++) {
+            ans += dp[L][i];
+            ans %= 1000000007;
+        }
+        System.out.println(ans);
+        return;
+    }
+
+    private static void alo4() {
+        Scanner scanner = new Scanner(System.in);
+        int n = scanner.nextInt();
+        dp4 = new int[n + 1][2];
+        for (int i = 1; i < n + 1; i++) {
+            dp4[i][1] = scanner.nextInt();
+            v.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n - 1; i++) {
+            int a = scanner.nextInt();
+            int b = scanner.nextInt();
+
+            v.get(a).add(b);
+            v.get(b).add(a);
+        }
+        alo4_helper(1, 0);
+        System.out.println(Math.max(dp4[1][0], dp4[1][1]));
+    }
+
+    private static void alo4_helper(int root, int pre) {
+        List<Integer> t = v.get(root);
+        for (int i = 0; i < t.size(); i++) {
+            if (t.get(i) != pre) {
+                alo4_helper(t.get(i), root);
+                dp4[root][1] += dp4[t.get(i)][0];
+                dp4[root][0] += Math.max(dp4[t.get(i)][0], dp4[t.get(i)][1]);
+            }
+        }
+    }
+
+    private static void prev1(){
+        Scanner scanner = new Scanner(System.in);
+        int a=scanner.nextInt();
+        int b=scanner.nextInt();
+        int c=scanner.nextInt();
+        int t = gcd(a,b);
+        t=gcd(t,c);
+        System.out.println(t);
+    }
+
+    private static int gcd(int a, int b) {
+        int n = a, m = b;
+        int t;
+        if (a < b) {
+            t = a;
+            a = b;
+            b = t;
+        }
+        while (b != 0) {
+            t = a % b;
+            a = b;
+            b = t;
+        }
+        return n * m / a;
     }
 }
